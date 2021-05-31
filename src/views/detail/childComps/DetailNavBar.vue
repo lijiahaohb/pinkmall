@@ -33,6 +33,7 @@
         methods: {
             activate(index) {
                 this.currentIndex = index
+                this.$emit("activate", index)
             },
             backClick() {
                 this.$router.back()

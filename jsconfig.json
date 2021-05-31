@@ -1,14 +1,15 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-            "@/*": ["src/*"]
-        },
-        "target": "ES6",
+        "target": "esnext",
         "module": "commonjs",
-        "allowSyntheticDefaultImports": true
-    },
-    "include": ["src/**/*"],
-    "exclude": ["node_modules"]
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "./",
+        "paths": {
+            "@/*": ["src/*"],
+            "@css*": ["src/assets/css*"],
+            "@icon*": ["src/assets/icon/*"],
+            "@image*": ["src/assets/image/*"]
+        }
+    }
 }
 

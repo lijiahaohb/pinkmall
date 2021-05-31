@@ -29,7 +29,6 @@
 
     import Scroll from "components/common/scroll/Scroll"
     import NavBar from "components/common/navbar/NavBar"
-    import BackTop from "components/content/backtop/BackTop"
     import TabControl from "components/content/tabcontrol/TabControl"
     import GoodsList from "components/content/goods/GoodsList"
 
@@ -38,7 +37,7 @@
         getHomeGoods
     } from "network/home"
 
-    import { debounce } from "components/common/utils"
+    import {itemImageListenerMixin, backTopMixin} from "@/common/mixin"
 
     export default {
         name: "Home",
@@ -50,7 +49,6 @@
             TabControl,
             GoodsList,
             Scroll,
-            BackTop
         },
         data() {
             return {
@@ -63,10 +61,9 @@
                     "sell": { page: 0, list: [] }
                 },
                 currentType: "pop",
-                isShowBackTop: false,
                 tabOffsetTop: 0,
                 isTabFixed: false,
-                saveY: 0
+                saveY: 0,
             }
         },
         created() {
@@ -79,21 +76,14 @@
             this.getHomeGoods("new")
             this.getHomeGoods("sell")
         },
-        mounted() {
-            // 3. 监听item中图片加载完成
-            // 对于refresh调用非常频繁的问题，进行防抖操作(debounce) 
-            // 相关知识点 防抖(debounce)和节流(throttle)
-            const func = debounce(this.$refs.scroll.refresh, 500)
-            this.$bus.$on("itemImageLoad", () => {
-                func()
-            })
-        },
+        mixins: [itemImageListenerMixin, backTopMixin],
         activated() {
             this.$refs.scroll.scrollTo(0, this.saveY)
             this.$refs.scroll.refresh()
         },
         deactivated() {
             this.saveY = this.$refs.scroll.getScrollY()
+            this.$bus.$off("itemImageLoad", this.itemImageListener)
         },
         methods: {
             /**
@@ -114,9 +104,7 @@
                 this.$refs.tabControl1.currentIndex = index
                 this.$refs.tabControl2.currentIndex = index
             },
-            backTop() {
-                this.$refs.scroll.scrollTo(0, 0)
-            },
+        
             contentScroll(position) {
                 // 因为打印position的时候发现y值都为负值，所以要加一个负号再和1000作比较
                 this.isShowBackTop = -position.y > 1000
